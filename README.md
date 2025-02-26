@@ -6,8 +6,8 @@ This project is a Node.js script to perform automatic token swaps using the TeaF
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/Adinkkk725/auto-swap.git
-   cd auto-swap
+   git clone https://github.com/Adinkkk725/teafi-auto-swap.git
+   cd teafi-auto-swap
    ```
 
 2. Install dependencies:
