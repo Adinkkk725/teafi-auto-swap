@@ -4,6 +4,7 @@ async function swapTokens(amount, fromToken, toToken, fromTokenSymbol, toTokenSy
     const url = process.env.SWAP_URL;
 
     const data = {
+        hash: "",
         blockchainId,
         type: 3,
         walletAddress,
