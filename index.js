@@ -14,10 +14,22 @@ function askQuestion(query) {
     }));
 }
 
+// Fungsi untuk memvalidasi input jumlah token
+function validateAmount(amount) {
+    return !isNaN(amount) && parseFloat(amount) > 0;
+}
+
 (async function() {
     try {
         // Minta input dari pengguna
-        const amount = await askQuestion('Masukkan jumlah token yang ingin di-swap: ');
+        let amount;
+        do {
+            amount = await askQuestion('Masukkan jumlah token yang ingin di-swap (gunakan titik untuk desimal): ');
+            if (!validateAmount(amount)) {
+                console.log('Jumlah token tidak valid. Silakan coba lagi.');
+            }
+        } while (!validateAmount(amount));
+
         const swapCount = await askQuestion('Masukkan jumlah berapa kali swap akan dilakukan: ');
         const direction = await askQuestion('Masukkan arah swap (1 untuk WPOL ke TPOL, 2 untuk TPOL ke WPOL): ');
 
