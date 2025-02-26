@@ -1,10 +1,9 @@
 const axios = require('axios');
 
-async function swapTokens(amount, fromToken, toToken, fromTokenSymbol, toTokenSymbol, walletAddress, hash, blockchainId, gasFeeTokenAddress, gasFeeTokenSymbol, gasFeeAmount) {
+async function swapTokens(amount, fromToken, toToken, fromTokenSymbol, toTokenSymbol, walletAddress, blockchainId, gasFeeTokenAddress, gasFeeTokenSymbol, gasFeeAmount) {
     const url = process.env.SWAP_URL;
 
     const data = {
-        hash,
         blockchainId,
         type: 3,
         walletAddress,
