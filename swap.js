@@ -11,10 +11,24 @@ async function swapTokens(amount, fromToken, toToken) {
             fromToken,
             toToken,
             amount
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
         console.log(`Swap berhasil: ${response.data}`);
     } catch (error) {
-        console.error("Error during swap:", error);
+        if (error.response) {
+            // Server merespons dengan status kode selain 2xx
+            console.error(`Error during swap: ${error.response.status} - ${error.response.statusText}`);
+            console.error(error.response.data);
+        } else if (error.request) {
+            // Permintaan dibuat tetapi tidak ada respons yang diterima
+            console.error('No response received:', error.request);
+        } else {
+            // Kesalahan saat mengatur permintaan
+            console.error('Error during swap:', error.message);
+        }
     }
 }
 
