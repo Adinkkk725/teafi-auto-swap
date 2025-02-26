@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import log from './logger.js';
 import dotenv from "dotenv";
 import ora from 'ora';
 dotenv.config();
@@ -18,7 +17,7 @@ const ABI = [
 
 async function sendDepositTransaction() {
     if (!PRIVATE_KEY) {
-        log.error("❌ PRIVATE_KEY is missing. Set it in a .env file.");
+        console.error("❌ PRIVATE_KEY is missing. Set it in a .env file.");
         return;
     }
 
@@ -31,7 +30,7 @@ async function sendDepositTransaction() {
         const randomAmount = (Math.random() * (MAX - MIN) + MIN).toFixed(8);
         const amountToSend = ethers.parseEther(randomAmount.toString());
 
-        log.info(`🔹 Wrapping ${randomAmount} POL to WPOL...`);
+        console.log(`🔹 Wrapping ${randomAmount} POL to WPOL...`);
         const feeData = await provider.getFeeData();
 
         const gasPrice = feeData.gasPrice ? feeData.gasPrice * 125n / 100n : undefined; // increase gwei 25% for fast transaction
@@ -41,7 +40,7 @@ async function sendDepositTransaction() {
             gasPrice,
         });
 
-        log.info(`📜 Transaction Sent at hash: ${tx.hash}`);
+        console.log(`📜 Transaction Sent at hash: ${tx.hash}`);
         spinner = ora(' Waiting for confirmation...').start();
 
         const timeout = new Promise((_, reject) =>
@@ -55,7 +54,7 @@ async function sendDepositTransaction() {
         if (spinner) {
             spinner.fail(` Transaction failed: ${error.message}`);
         } else {
-            log.error("❌ Error sending transaction:", error.message);
+            console.error("❌ Error sending transaction:", error.message);
         }
 
         return { txHash: null, address: wallet.address, amount: null };
