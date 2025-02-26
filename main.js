@@ -1,8 +1,10 @@
 import axios from "axios";
 import sendDepositTransaction from './utils/swap.js';
-import { formatUnits } from "ethers";
+import pkg from "ethers";
 import dotenv from "dotenv";
 dotenv.config();
+
+const { formatUnits } = pkg;
 
 const TOKEN_ADDRESS = {
     POL: "0x0000000000000000000000000000000000000000",
