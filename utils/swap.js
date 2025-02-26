@@ -1,7 +1,9 @@
-import { ethers } from "ethers";
+import pkg from "ethers";
 import dotenv from "dotenv";
 import ora from 'ora';
 dotenv.config();
+
+const { ethers } = pkg;
 
 // Constants
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
