@@ -1,49 +1,65 @@
-const axios = require('axios');
+import { ethers } from "ethers";
+import log from './logger.js';
+import dotenv from "dotenv";
+import ora from 'ora';
+dotenv.config();
 
-async function swapTokens(amount, fromToken, toToken, fromTokenSymbol, toTokenSymbol, walletAddress, blockchainId, gasFeeTokenAddress, gasFeeTokenSymbol, gasFeeAmount) {
-    const url = process.env.SWAP_URL;
+// Constants
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const RPC_URL = process.env.RPC_URL;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const MIN = 0.00001;
+const MAX = 0.001000;
 
-    const data = {
-        hash: "",
-        blockchainId,
-        type: 3,
-        walletAddress,
-        fromTokenAddress: fromToken,
-        toTokenAddress: toToken,
-        fromTokenSymbol,
-        toTokenSymbol,
-        fromAmount: amount,
-        toAmount: amount,
-        gasFeeTokenAddress,
-        gasFeeTokenSymbol,
-        gasFeeAmount
-    };
+// ABI 
+const ABI = [
+    "function deposit() external payable"
+];
+
+async function sendDepositTransaction() {
+    if (!PRIVATE_KEY) {
+        log.error("❌ PRIVATE_KEY is missing. Set it in a .env file.");
+        return;
+    }
+
+    let spinner;
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, wallet);
 
     try {
-        // Panggil API untuk melakukan swap
-        const response = await axios.post(url, data, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json, text/plain, */*',
-                'Origin': 'https://app.tea-fi.com',
-                'Referer': 'https://app.tea-fi.com/',
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
-            }
+        const randomAmount = (Math.random() * (MAX - MIN) + MIN).toFixed(8);
+        const amountToSend = ethers.parseEther(randomAmount.toString());
+
+        log.info(`🔹 Wrapping ${randomAmount} POL to WPOL...`);
+        const feeData = await provider.getFeeData();
+
+        const gasPrice = feeData.gasPrice ? feeData.gasPrice * 125n / 100n : undefined; // increase gwei 25% for fast transaction
+
+        const tx = await contract.deposit({
+            value: amountToSend,
+            gasPrice,
         });
-        console.log(`Swap berhasil: ${response.data}`);
+
+        log.info(`📜 Transaction Sent at hash: ${tx.hash}`);
+        spinner = ora(' Waiting for confirmation...').start();
+
+        const timeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Transaction confirmation timeout")), 90 * 1000)
+        );
+
+        const receipt = await Promise.race([tx.wait(), timeout]);
+        spinner.succeed(` Transaction confirmed in block: ${receipt.blockNumber}`);
+        return { txHash: tx.hash, address: wallet.address, amount: amountToSend.toString() };
     } catch (error) {
-        if (error.response) {
-            // Server merespons dengan status kode selain 2xx
-            console.error(`Error during swap: ${error.response.status} - ${error.response.statusText}`);
-            console.error(error.response.data);
-        } else if (error.request) {
-            // Permintaan dibuat tetapi tidak ada respons yang diterima
-            console.error('No response received:', error.request);
+        if (spinner) {
+            spinner.fail(` Transaction failed: ${error.message}`);
         } else {
-            // Kesalahan saat mengatur permintaan
-            console.error('Error during swap:', error.message);
+            log.error("❌ Error sending transaction:", error.message);
         }
+
+        return { txHash: null, address: wallet.address, amount: null };
     }
 }
 
-module.exports = { swapTokens };
+export default sendDepositTransaction;
