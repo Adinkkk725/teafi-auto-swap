@@ -1,15 +1,18 @@
 {
-  "name": "auto-swap",
+  "name": "teafi-auto-swap",
   "version": "1.0.0",
-  "description": "Node.js script to perform automatic token swaps using the TeaFi API",
-  "main": "index.js",
+  "description": "Auto Swap Script for TeaFi",
+  "main": "main.js",
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node main.js"
   },
-  "author": "Adinkkk725",
-  "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
-    "dotenv": "^8.2.0"
-  }
+    "dotenv": "^8.2.0",
+    "ethers": "^5.4.0",
+    "ora": "^5.4.1"
+  },
+  "author": "Adinkkk725",
+  "license": "ISC"
 }
