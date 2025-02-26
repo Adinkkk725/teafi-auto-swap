@@ -40,7 +40,10 @@ function validateAmount(amount) {
         const toTokenSymbol = direction === '1' ? 'tPOL' : 'WPOL';
 
         const walletAddress = '0x9C55c173877f25D13538f4355305632126f8e1E0';
-        const hash = '0x42cc9d89f1bda8a76ed7396ced07488a4b0d012356c5dd0b310b73c0baff2d78';
+        
+        // Dapatkan hash transaksi terbaru
+        const hash = await askQuestion('Masukkan hash transaksi terbaru: ');
+        
         const blockchainId = 137;
         const gasFeeTokenAddress = '0x0000000000000000000000000000000000000000';
         const gasFeeTokenSymbol = 'POL';
