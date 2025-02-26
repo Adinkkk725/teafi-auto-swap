@@ -36,17 +36,26 @@ function validateAmount(amount) {
         // Tentukan token berdasarkan pilihan pengguna
         const fromToken = direction === '1' ? process.env.WPOL_TOKEN : process.env.TPOL_TOKEN;
         const toToken = direction === '1' ? process.env.TPOL_TOKEN : process.env.WPOL_TOKEN;
+        const fromTokenSymbol = direction === '1' ? 'WPOL' : 'tPOL';
+        const toTokenSymbol = direction === '1' ? 'tPOL' : 'WPOL';
+
+        const walletAddress = '0x9C55c173877f25D13538f4355305632126f8e1E0';
+        const hash = '0x42cc9d89f1bda8a76ed7396ced07488a4b0d012356c5dd0b310b73c0baff2d78';
+        const blockchainId = 137;
+        const gasFeeTokenAddress = '0x0000000000000000000000000000000000000000';
+        const gasFeeTokenSymbol = 'POL';
+        const gasFeeAmount = '37605854299037000';
 
         const interval = 3600 * 1000;  // Interval waktu dalam milidetik (misalnya, setiap jam)
 
         // Jalankan swap pertama kali
-        await swapTokens(amount, fromToken, toToken);
+        await swapTokens(amount, fromToken, toToken, fromTokenSymbol, toTokenSymbol, walletAddress, hash, blockchainId, gasFeeTokenAddress, gasFeeTokenSymbol, gasFeeAmount);
 
         // Swap secara berkala sesuai dengan swapCount
         let currentSwap = 1;
         const intervalId = setInterval(async () => {
             if (currentSwap < swapCount) {
-                await swapTokens(amount, fromToken, toToken);
+                await swapTokens(amount, fromToken, toToken, fromTokenSymbol, toTokenSymbol, walletAddress, hash, blockchainId, gasFeeTokenAddress, gasFeeTokenSymbol, gasFeeAmount);
                 currentSwap++;
             } else {
                 clearInterval(intervalId);
